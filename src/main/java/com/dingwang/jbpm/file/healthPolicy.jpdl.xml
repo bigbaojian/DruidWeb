@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<process name="healthPolicy" xmlns="http://jbpm.org/4.4/jpdl">
+   <start g="91,628,48,48" name="start1">
+      <transition g="-6,-19" name="暂存" to="录入中"/>
+      <transition g="-9,-7" name="提交" to="待复核"/>
+   </start>
+   <task g="152,345,92,52" name="录入中">
+      <transition g="346,303:-35,-32" name="提交核保" to="exclusive1"/>
+   </task>
+   <task g="223,626,92,52" name="待复核">
+      <transition g="-50,-23" name="复核员领取" to="复核中"/>
+      <transition g="440,538:-57,-22" name="主管撤销" to="已撤销"/>
+   </task>
+   <task g="438,627,92,52" name="复核中">
+      <transition g="487,778;56,780;59,372:-9,-44" name="打回" to="录入中"/>
+      <transition g="781,762:-5,-8" name="拒保" to="拒保"/>
+      <transition g="-29,-15" name="复核完成" to="自核处理中"/>
+      <transition g="-57,-22" name="主管撤销" to="已撤销"/>
+   </task>
+   <decision g="459,294,48,48" name="exclusive1" expr="#{3>2? '1':'2'}">
+      <transition g="367,417:-51,-14" name="不满足核保规则" to="录入中"/>
+      <transition g="-86,-94" name="自动核保" to="自核处理中"/>
+   </decision>
+   <task g="1063,745,92,52" name="拒保">
+      <transition g="1343,776:-50,-22" name="结束" to="end1"/>
+   </task>
+   <end g="1318,645,48,48" name="end1"/>
+   <task g="842,286,92,52" name="已撤销">
+      <transition g="1339,313:-50,-22" name="结束" to="end1"/>
+   </task>
+   <task g="639,626,92,52" name="自核处理中">
+      <transition g="-79,-22" name="自核通过" to="exclusive2"/>
+      <transition g="-41,-22" name="无需人工核保" to="待承保"/>
+   </task>
+   <decision g="827,487,48,48" name="exclusive2">
+      <transition g="-23,-19" name="需人工核保" to="待人工核保"/>
+   </decision>
+   <task g="982,489,92,52" name="待人工核保">
+      <transition g="-19,-13" name="核保员领取" to="人工核保中"/>
+      <transition g="-57,-22" name="主管撤销" to="已撤销"/>
+   </task>
+   <java g="1181,491,92,52" name="人工核保中">
+      <transition g="-57,-22" name="核保通过" to="待承保"/>
+      <transition g="-57,-22" name="主管撤销" to="已撤销"/>
+   </java>
+   <task g="862,629,92,52" name="待承保">
+      <transition g="-12,-25" name="财务确认" to="承保通过"/>
+   </task>
+   <task g="1059,634,92,52" name="承保通过">
+      <transition g="-50,-22" name="结束" to="end1"/>
+   </task>
+</process>
